@@ -73,7 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _userTransaction.add(newTx);
     });
-    Navigator.of(context).pop();
   }
 
   void _startAddNewTransaction(BuildContext context) {
@@ -97,18 +96,23 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => _startAddNewTransaction(context))
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Chart(_recentTransactions),
-            TransactionList(_userTransaction),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Chart(_recentTransactions),
+              TransactionList(_userTransaction),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => _startAddNewTransaction(context),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 8),
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        ),
       ),
     );
   }
