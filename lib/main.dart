@@ -1,6 +1,8 @@
 import 'dart:html';
+import 'package:flutter/foundation.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:personal_expenses/widgets/new_transaction.dart';
 import 'package:personal_expenses/widgets/transaction_list.dart';
 import './widgets/chart.dart';
@@ -49,7 +51,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransaction = [];
+  final List<Transaction> _userTransaction = [
+    Transaction(title: "test", amount: 25.99, date: DateTime.now()),
+    Transaction(title: "test1", amount: 29.99, date: DateTime.now()),
+  ];
 
   bool _showChart = false;
 
@@ -93,8 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     final appBar = AppBar(
       title: Text(
@@ -108,9 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     final txListWidget = Container(
-        height: (MediaQuery.of(context).size.height -
+        height: (mediaQuery.size.height -
                 appBar.preferredSize.height -
-                MediaQuery.of(context).padding.top) *
+                mediaQuery.padding.top) *
             0.75,
         child: TransactionList(_userTransaction, _deleteTransaction));
 
@@ -125,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("Εμφάνιση Διαγράμματος"),
-                    Switch(
+                    Switch.adaptive(
                       value: _showChart,
                       onChanged: (val) {
                         setState(() {
@@ -137,18 +142,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               if (!isLandscape)
                 Container(
-                    height: (MediaQuery.of(context).size.height -
+                    height: (mediaQuery.size.height -
                             appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
+                            mediaQuery.padding.top) *
                         0.25,
                     child: Chart(_recentTransactions)),
               if (!isLandscape) txListWidget,
               if (isLandscape)
                 _showChart
                     ? Container(
-                        height: (MediaQuery.of(context).size.height -
+                        height: (mediaQuery.size.height -
                                 appBar.preferredSize.height -
-                                MediaQuery.of(context).padding.top) *
+                                mediaQuery.padding.top) *
                             0.75,
                         child: Chart(_recentTransactions))
                     : txListWidget,
@@ -159,11 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: 14),
-        child: FloatingActionButton(
-          elevation: 8,
-          child: Icon(Icons.add),
-          onPressed: () => _startAddNewTransaction(context),
-        ),
+        child: Theme.of(context).platform == TargetPlatform.iOS
+            ? FloatingActionButton(
+                elevation: 8,
+                child: Icon(Icons.add),
+                onPressed: () => _startAddNewTransaction(context),
+              )
+            : Container(),
       ),
     );
   }
